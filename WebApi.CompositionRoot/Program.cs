@@ -3,6 +3,7 @@ using WebApi.Core;
 using WebApi.Core.DomainModel;
 using WebApi.Controllers;
 using WebApi.Persistence;
+namespace WebApi;
 
 public class Program {
 
