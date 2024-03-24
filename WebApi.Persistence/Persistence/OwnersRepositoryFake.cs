@@ -20,6 +20,22 @@ public class OwnersRepositoryFake(
       return owner;
    }
 
+   public IEnumerable<Owner> SelectByName(string name) =>
+      dataContext.Owners.Values
+         .Where(owner => owner.Name.Contains(name))
+         .ToList();
+
+   public Owner? FindByEmail(string email) =>
+      dataContext.Owners.Values
+         .FirstOrDefault(owner => owner.Email == email);
+
+   public IEnumerable<Owner> SelectByBirthDate(DateTime from, DateTime to) =>
+      dataContext.Owners.Values
+         .Where(owner =>
+            owner.Birthdate >= from &&
+            owner.Birthdate <= to)
+         .ToList();
+   
    public void Add(Owner owner) {
       dataContext.Owners.Add(owner.Id, owner);
    }

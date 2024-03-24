@@ -11,15 +11,19 @@ public class Program {
       // WebApplication Builder Pattern
       WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
       
-      // DI-Container is part of the WebApplication
-      // IServiceCollection services = builder.Services;
+      // Configure logging
+      // ---------------------------------------------------------------------
+      builder.Logging.ClearProviders();
+      builder.Logging.AddConsole();
+      builder.Logging.AddDebug();
       
+      // Configure DI-Container aka builder.Services:IServiceCollection
+      // ---------------------------------------------------------------------
       // add http logging 
       builder.Services.AddHttpLogging(opts =>
          opts.LoggingFields = HttpLoggingFields.All);
       // add Controllers
       builder.Services.AddControllers();
-      
       // add DataContext
       builder.Services.AddScoped<IDataContext, DataContextFake>();
       // add Repositories
@@ -27,6 +31,7 @@ public class Program {
  
 
       // Build the WebApplication
+      // ---------------------------------------------------------------------
       WebApplication app = builder.Build();
       // use http logging
       app.UseHttpLogging();
