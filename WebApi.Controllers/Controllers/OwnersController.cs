@@ -109,8 +109,6 @@ public class OwnersController(
    ) {
       logger.LogDebug("CreateOwner() owner={owner}", owner.Name);
       
-      // check if owner.Id is set, else generate new Id
-      if(owner.Id == Guid.Empty) owner.Id = Guid.NewGuid();
       // check if owner with given Id already exists   
       if(ownersRepository.FindById(owner.Id) != null) 
          return Conflict($"CreateOwner: Owner with the given id already exists");
@@ -145,7 +143,7 @@ public class OwnersController(
          return NotFound($"UpdateOwner: Owner with given id not found.");
 
       // Update person
-      owner = new Owner(updOwner);
+      owner.Update(updOwner.Name, updOwner.Email);
       
       // save to repository and write to database 
       ownersRepository.Update(owner);
