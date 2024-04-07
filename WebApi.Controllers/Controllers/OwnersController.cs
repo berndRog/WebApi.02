@@ -27,43 +27,42 @@ public class OwnersController(
 
    // Get owner by Id
    // http://localhost:5100/banking/owners/{id}
-   [HttpGet("{id}")]
+   [HttpGet("{id:guid}")]
    public ActionResult<Owner> GetOwnerById(
       [FromRoute] Guid id
    ) {
       logger.LogDebug("GetOwnerById() id={id}", id.As8());
-      switch (ownersRepository.FindById(id)) {
-         case Owner owner: return Ok(owner);
-         case null:        return NotFound($"Owner with given Id not found");
-      }
+      return ownersRepository.FindById(id) switch {
+         // not null pattern
+         { } owner => Ok(owner),
+         null => NotFound("Owner with given Id not found")
+      };
    }
    
    // Get owners by name
-   // http://localhost:5100/banking/owners/name
+   // http://localhost:5100/banking/owners/name?name=abc
    [HttpGet("name")]
    public ActionResult<IEnumerable<Owner>> GetOwnersByName(
       [FromQuery] string name
    ) {
       logger.LogDebug("GetOwnersByName() name={name}", name);
-      switch (ownersRepository.SelectByName(name)) {
-         case IEnumerable<Owner> owners: 
-            return Ok(owners);
-         case null: 
-            return NotFound($"Owners with given name not found");
-      }
+      return ownersRepository.SelectByName(name) switch {
+         { } owners => Ok(owners),
+         null => NotFound("Owners with given name not found")
+      };
    }
 
    // Get owner by email
-   // http://localhost:5100/banking/owners/email
+   // http://localhost:5100/banking/owners/email?email=abc
    [HttpGet("email")]
    public ActionResult<Owner?> GetOwnerByEmail(
       [FromQuery] string email
    ) {
       logger.LogDebug("GetOwnerByEmail() email={email}", email);
-      switch (ownersRepository.FindByEmail(email)) {
-         case Owner owner: return Ok(owner);
-         case null:        return NotFound($"Owner with given email not found");
-      }
+      return ownersRepository.FindByEmail(email) switch {
+         { } owner => Ok(owner),
+         null => NotFound($"Owner with given email not found")
+      };
    }
 
    // Get owners by birthdate 
@@ -111,16 +110,19 @@ public class OwnersController(
       
       // check if owner with given Id already exists   
       if(ownersRepository.FindById(owner.Id) != null) 
-         return Conflict($"CreateOwner: Owner with the given id already exists");
+         return Conflict("CreateOwner: Owner with the given id already exists");
       
       // add owner to repository
       ownersRepository.Add(owner); 
       // save to datastore
       dataContext.SaveAllChanges();
       
-      // return created owner      
-      var uri = new Uri($"{Request.Path}/{owner.Id}", UriKind.Relative);
-      return Created(uri: uri, value: owner);     
+      // return created owner  
+      string requestPath = null!;
+      if(Request == null) requestPath = "http://localhost:5100/banking/owners";
+      else                requestPath = Request.Path;
+      var uri = new Uri($"{requestPath}/{owner.Id}", UriKind.Relative);
+      return Created(uri, owner);     
    }
    
    // Update owner
@@ -130,19 +132,16 @@ public class OwnersController(
       [FromRoute] Guid id,
       [FromBody]  Owner updOwner
    ) {
-      
       logger.LogDebug("UpdateOwner() id={id} updOwner={updOwner}",id.As8(), updOwner.Name);
       
       if(id != updOwner.Id) 
          return BadRequest($"UpdateOwner: Id in the route and body do not match.");
       
-//    Owner updOwner = mapper.Map<Owner>(updPersonDto);
-      
-      Owner? owner = ownersRepository.FindById(id);
+      var owner = ownersRepository.FindById(id);
       if (owner == null)
          return NotFound($"UpdateOwner: Owner with given id not found.");
 
-      // Update person
+      // Update an owner
       owner.Update(updOwner.Name, updOwner.Email);
       
       // save to repository and write to database 
@@ -161,9 +160,9 @@ public class OwnersController(
    ) {
       logger.LogDebug("DeleteOwner {id}", id.As8());
       
-      Owner? owner = ownersRepository.FindById(id);
+      var owner = ownersRepository.FindById(id);
       if(owner == null)
-         return NotFound($"DeleteOwner: Owner with given id not found.");
+         return NotFound("DeleteOwner: Owner with given id not found.");
 
       // delete in repository and write to database 
       ownersRepository.Remove(owner);

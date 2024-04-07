@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-
 namespace WebApi.Persistence;
 
 public class OwnersRepositoryFake(

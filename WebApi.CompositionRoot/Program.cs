@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using WebApi.Core;
-using WebApi.Core.DomainModel;
-using WebApi.Controllers;
 using WebApi.Persistence;
+
 namespace WebApi;
 
 public class Program {
@@ -13,7 +12,7 @@ public class Program {
    static void Main(string[] args) {
 
       // WebApplication Builder Pattern
-      WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+      var builder = WebApplication.CreateBuilder(args);
       
       // Configure logging
       // ---------------------------------------------------------------------
@@ -36,7 +35,7 @@ public class Program {
 
       // Build the WebApplication
       // ---------------------------------------------------------------------
-      WebApplication app = builder.Build();
+      var app = builder.Build();
       // use http logging
       app.UseHttpLogging();
       // routing

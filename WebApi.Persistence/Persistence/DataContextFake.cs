@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using WebApi.Core;
 using WebApi.Core.DomainModel.Entities;
-
 namespace WebApi.Persistence;
 
 public class DataContextFake: IDataContext {
@@ -16,7 +12,7 @@ public class DataContextFake: IDataContext {
    #region fields
    private readonly string _filePath =
       Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-      + $"WebApi02.json";      
+      + "WebApi02.json";      
    #endregion
 
    #region properties
@@ -31,7 +27,7 @@ public class DataContextFake: IDataContext {
          } else {
 
          // Read the JSON file
-            string json = File.ReadAllText(_filePath, Encoding.UTF8);
+            var json = File.ReadAllText(_filePath, Encoding.UTF8);
 
             // Deserialize the JSON string back into the CombinedDictionaries class
             Owners = JsonSerializer.Deserialize<Dictionary<Guid, Owner>>(
@@ -55,7 +51,7 @@ public class DataContextFake: IDataContext {
    public bool SaveAllChanges() {
       try {
          // Serialize to JSON
-         string json = JsonSerializer.Serialize(
+         var json = JsonSerializer.Serialize(
             Owners, 
             new JsonSerializerOptions {
                PropertyNameCaseInsensitive = true,
