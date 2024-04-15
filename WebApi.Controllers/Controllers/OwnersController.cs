@@ -42,13 +42,13 @@ public class OwnersController(
    // Get owners by name
    // http://localhost:5100/banking/owners/name?name=abc
    [HttpGet("name")]
-   public ActionResult<IEnumerable<Owner>> GetOwnersByName(
+   public ActionResult<Owner> GetOwnerByName(
       [FromQuery] string name
    ) {
-      logger.LogDebug("GetOwnersByName() name={name}", name);
-      return ownersRepository.SelectByName(name) switch {
-         { } owners => Ok(owners),
-         null => NotFound("Owners with given name not found")
+      logger.LogDebug("GetOwnerByName() name={name}", name);
+      return ownersRepository.FindByName(name) switch {
+         { } owner => Ok(owner),
+         null => NotFound("Owner with given name not found")
       };
    }
 

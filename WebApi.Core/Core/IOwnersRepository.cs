@@ -6,7 +6,7 @@ namespace WebApi.Core;
 public interface IOwnersRepository {
    IEnumerable<Owner> Select();
    Owner? FindById(Guid id);
-   IEnumerable<Owner> SelectByName(string name);
+   Owner? FindByName(string name);
    Owner? FindByEmail(string email);
    IEnumerable<Owner> SelectByBirthDate(DateTime from, DateTime to);
    
